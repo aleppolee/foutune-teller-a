@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash", // 切換至目前最穩定的版本
+      model: "gemini-2.5-pro", // 切換至使用者指定的 2.5 版本
       generationConfig: {
         responseMimeType: "application/json",
         temperature: 0.7
