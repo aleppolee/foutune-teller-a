@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css'
 
 const Step = {
@@ -81,8 +80,6 @@ function App() {
   const [result, setResult] = useState<FortuneResult | null>(null);
   const [error, setError] = useState<string>('');
 
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-
   const handleMethodSelect = (method: FortuneMethod) => {
     setSelectedMethod(method);
     setStep(Step.INPUT_DATA);
@@ -93,66 +90,33 @@ function App() {
   };
 
   const startFortuneTelling = async () => {
-    if (!apiKey) {
-      setError('系統配置缺失：未找到 API 金鑰。');
-      return;
-    }
     setError('');
     setStep(Step.LOADING);
 
     try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      // 恢復為原本使用的 Pro 模型，並啟用 JSON 模式
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-pro",
-        generationConfig: { 
-          responseMimeType: "application/json",
-          temperature: 0.7
-        }
-      }); 
+      // 呼叫 Vercel Serverless Function API
+      const response = await fetch('/api/fortune', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedMethod,
+          formData
+        }),
+      });
 
-      const prompt = `
-        你是一位極具現代感且洞察力深刻的占卜師，擅長將神祕學轉化為溫暖且有力量的心理指引。
-        當前占卜方式：${selectedMethod?.name}。
-        使用者提供的資訊：${JSON.stringify(formData)}。
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '伺服器請求失敗');
+      }
 
-        重要提示：如果使用者提供的是西元/國曆日期（birthdate），請你根據該日期自動換算為對應的「農曆」或「干支曆」進行解析。
-        請以「白話、親切、且直指內心核心」的口吻進行解析。
-        請用現代人能感同身受的語言（例如：焦慮、內耗、共感、職場定位等）來解釋命運。
-        
-        你必須回傳一個「純 JSON 物件」，嚴禁包含任何 Markdown 標籤（如 \`\`\`json）或額外文字。
-        格式要求如下（內容必須使用繁體中文）：
-        {
-          "career": "關於事業發展與個人價值的白話分析與建議...",
-          "health": "針對目前能量與身心狀態的關懷與提醒...",
-          "fortune": "關於物質生活與金錢觀念的務實建議...",
-          "love": "關於人際關係與靈魂連結的感性洞察...",
-          "future": "未來發展的具體方向與需要把握的轉折點...",
-          "summary": "一句溫暖、有力量且平易近人的核心啟示。",
-          "imageKeyword": "一個代表此次氛圍的英文單詞，用於配圖（如：breeze, light, connection, road）。"
-        }
-      `;
-
-      const apiResult = await model.generateContent(prompt);
-      const apiResponse = await apiResult.response;
-      let text = apiResponse.text();
-      
-      // 移除可能存在的 Markdown 標記或多餘空白
-      text = text.replace(/```json|```/g, "").trim();
-      
-      // 尋找 JSON 的起始與結束位置，確保解析範圍正確
-      const firstBrace = text.indexOf('{');
-      const lastBrace = text.lastIndexOf('}');
-      if (firstBrace === -1 || lastBrace === -1) throw new Error("AI 回傳內容不包含有效的 JSON 格式");
-      
-      const cleanJson = text.substring(firstBrace, lastBrace + 1);
-      const parsedResult: FortuneResult = JSON.parse(cleanJson);
-      
-      setResult(parsedResult);
+      const data: FortuneResult = await response.json();
+      setResult(data);
       setStep(Step.RESULT);
     } catch (err: any) {
       console.error(err);
-      setError(`連結失敗：${err.message || '請確認 API 金鑰權限'}`);
+      setError(`占卜失敗：${err.message || '請確認網路連線'}`);
       setStep(Step.INPUT_DATA);
     }
   };
