@@ -70,7 +70,7 @@ interface FortuneResult {
   love: string;
   future: string;
   summary: string;
-  imageKeyword: string;
+  imagePrompt: string;
 }
 
 function App() {
@@ -188,14 +188,14 @@ function App() {
             
             <div className="result-header">
               <img 
-                src={`https://source.unsplash.com/featured/?${result.imageKeyword},blackandwhite`} 
+                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(result.imagePrompt)}?width=1000&height=1000&nologo=true&seed=${Math.floor(Math.random() * 1000)}`} 
                 alt="命運視覺" 
                 className="result-image"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1000&q=80";
                 }}
               />
-              <p className="result-meta">視覺意象已紀錄</p>
+              <p className="result-meta">命運意象已生成</p>
             </div>
 
             <div className="result-grid">

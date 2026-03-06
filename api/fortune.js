@@ -43,7 +43,7 @@ export default async function handler(req, res) {
         "love": "關於人際關係與靈魂連結的感性洞察...",
         "future": "未來發展的具體方向與需要把握的轉折點...",
         "summary": "一句溫暖、有力量且平易近人的核心啟示。",
-        "imageKeyword": "一個代表此次氛圍的英文單詞，用於配圖（如：breeze, light, connection, road）。"
+        "imagePrompt": "一段豐富且具備藝術感的英文敘述，用於 AI 生成一張代表此次占卜氛圍的圖像（例如：'A mystical tarot-style illustration of a glowing phoenix rising from ashes, golden hour, cinematic lighting'）。"
       }
     `;
 
