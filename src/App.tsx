@@ -13,7 +13,7 @@ const Icons = {
 };
 
 interface FortuneMethod {
-  id: string; name: string; icon: () => JSX.Element; description: string;
+  id: string; name: string; icon: () => React.ReactNode; description: string;
   fields: { id: string; label: string; type: string; placeholder: string; required?: boolean }[];
 }
 
