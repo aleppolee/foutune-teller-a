@@ -1,16 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
-  // 只允許 POST 請求
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  // 從環境變數讀取 API Key (Vercel Serverless Function 環境)
   const apiKey = process.env.GEMINI_API_KEY;
-
   if (!apiKey) {
-    return res.status(500).json({ error: "伺服器未設定 API Key，請檢查 Vercel 環境變數。" });
+    return res.status(500).json({ error: "API Key Missing" });
   }
 
   const { selectedMethod, formData } = req.body;
@@ -18,42 +15,41 @@ export default async function handler(req, res) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-pro", // 切換至使用者指定的 2.5 版本
+      model: "gemini-2.5-pro",
       generationConfig: {
         responseMimeType: "application/json",
-        temperature: 0.7
+        temperature: 0.8 // 稍微調高一點點，增加占卜的靈感與豐富度
       }
     });
 
     const prompt = `
-      你是一位極具現代感且洞察力深刻的占卜師，擅長將神祕學轉化為溫暖且有力量的心理指引。
+      你是一位融合了古老神祕學與現代深度心理學的「靈曦占卜師」。
       當前占卜方式：${selectedMethod?.name}。
       使用者提供的資訊：${JSON.stringify(formData)}。
 
-      重要提示：如果使用者提供的是西元/國曆日期（birthdate），請你根據該日期自動換算為對應的「農曆」或「干支曆」進行解析。
-      請以「白話、親切、且直指內心核心」的口吻進行解析。
-      請用現代人能感同身受的語言（例如：焦慮、內耗、共感、職場定位等）來解釋命運。
+      任務要求：
+      1. 如果涉及日期，請精確考慮節氣與曆法換算（如八字、紫微）。
+      2. 語氣風格：神祕、溫暖、充滿洞察力，且具備現代感。避免老掉牙的江湖術語，改用「能量流動」、「心理投射」、「生命節奏」等詞彙。
+      3. 內容深度：不僅僅是預測，更要提供「為何如此」的心理分析與「如何應對」的行動指引。
 
-      你必須回傳一個「純 JSON 物件」，嚴禁包含任何 Markdown 標籤（如 \`\`\`json）或額外文字。
-      格式要求如下（內容必須使用繁體中文）：
+      回傳格式 (JSON)：
       {
-        "career": "關於事業發展與個人價值的白話分析與建議...",
-        "health": "針對目前能量與身心狀態的關懷與提醒...",
-        "fortune": "關於物質生活與金錢觀念的務實建議...",
-        "love": "關於人際關係與靈魂連結的感性洞察...",
-        "future": "未來發展的具體方向與需要把握的轉折點...",
-        "summary": "一句溫暖、有力量且平易近人的核心啟示。",
-        "imagePrompt": "一段豐富且具備藝術感的英文敘述，用於 AI 生成一張代表此次占卜氛圍的圖像（例如：'A mystical tarot-style illustration of a glowing phoenix rising from ashes, golden hour, cinematic lighting'）。"
+        "career": "關於事業、才華展現與職場能量的深度分析（約100-150字）",
+        "health": "關於身心平衡、情緒健康與能量修復的建議...",
+        "fortune": "關於物質世界、價值觀與金錢流向的洞察...",
+        "love": "關於人際連結、親密關係與內心共振的解析...",
+        "future": "未來一至三個月的關鍵轉折點與生命主題...",
+        "summary": "一句能震懾靈魂、提供核心力量的短評。",
+        "imagePrompt": "A high-quality, mystical artistic description for AI image generation. Theme: ${selectedMethod?.name} combined with ethereal cosmic elements. Dark fantasy style, cinematic lighting, 8k."
       }
     `;
 
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
 
-    // 解析並回傳
     return res.status(200).json(JSON.parse(responseText));
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return res.status(500).json({ error: error.message || "生成占卜結果時發生錯誤" });
+    console.error("Gemini Error:", error);
+    return res.status(500).json({ error: "命運連線不穩，請稍後再試。" });
   }
 }
