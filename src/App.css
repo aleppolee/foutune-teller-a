@@ -4,10 +4,10 @@
   --bg: #05070a;
   --surface: #0d1117;
   --border: rgba(255, 255, 255, 0.08);
-  --text-primary: #f8fafc;
+  --text-primary: #ffffff; /* 確保是最純的白 */
   --text-secondary: #94a3b8;
   --accent: #38bdf8;
-  --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
@@ -18,7 +18,7 @@ body {
 .container { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
 
 header { text-align: center; margin-bottom: 80px; }
-.title { font-size: 2rem; font-weight: 200; letter-spacing: 0.8rem; text-transform: uppercase; }
+.title { font-size: 2rem; font-weight: 200; letter-spacing: 0.8rem; text-transform: uppercase; color: var(--text-primary); }
 .subtitle { color: var(--text-secondary); font-size: 0.75rem; letter-spacing: 0.3rem; opacity: 0.6; }
 
 /* 網格與卡片 */
@@ -32,9 +32,10 @@ header { text-align: center; margin-bottom: 80px; }
 @media (min-width: 800px) { .method-card:nth-child(4), .method-card:nth-child(5) { flex: 0 1 calc(50% - 140px); } }
 .method-card:hover { border-color: var(--accent); transform: translateY(-3px); background: rgba(255,255,255,0.02); }
 .method-icon-svg { width: 30px; height: 30px; stroke: var(--accent); stroke-width: 1.2; fill: none; margin-bottom: 24px; }
+.method-card h2 { color: var(--text-primary); }
 
-/* 揭示儀式 (儀式感) */
-.reveal- ritual {
+/* 揭示儀式 */
+.reveal-ritual {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 120px 0; animation: fadeIn 1s ease; cursor: pointer;
 }
@@ -42,36 +43,40 @@ header { text-align: center; margin-bottom: 80px; }
   width: 140px; height: 200px; border: 1px solid var(--accent);
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 30px; transition: var(--transition);
-  position: relative; box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
 }
-.reveal-ritual:hover .reveal-card { transform: scale(1.05); box-shadow: 0 0 50px rgba(56, 189, 248, 0.2); }
-.reveal-ritual span { font-size: 0.8rem; letter-spacing: 0.3rem; color: var(--accent); }
+.reveal-ritual:hover .reveal-card { transform: scale(1.05); }
 
-/* 結果呈現 */
+/* 按鈕修正：強制設定文字顏色與透明度 */
+.btn-primary {
+  width: 100%; padding: 20px; 
+  background: #ffffff !important; /* 強制背景白 */
+  color: #05070a !important;    /* 強制文字黑 */
+  border: none; font-size: 0.8rem; font-weight: 600; 
+  letter-spacing: 0.3rem; text-transform: uppercase; 
+  cursor: pointer; transition: 0.3s;
+  opacity: 1 !important;        /* 確保不透明 */
+  display: block;
+}
+.btn-primary:hover {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+  letter-spacing: 0.4rem;
+}
+
+/* 其他結果樣式 */
 .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; }
-.result-item h3 { font-size: 0.7rem; letter-spacing: 0.2rem; color: var(--accent); margin-bottom: 12px; font-weight: 300; }
-.result-item p { font-size: 0.95rem; line-height: 1.8; color: var(--text-secondary); font-weight: 300; }
+.result-item h3 { font-size: 0.7rem; letter-spacing: 0.2rem; color: var(--accent); margin-bottom: 12px; }
+.result-item p { font-size: 0.95rem; line-height: 1.8; color: var(--text-secondary); }
 
-/* 幸運指南 (幸運導航) */
 .lucky-guide {
   display: flex; justify-content: center; gap: 40px;
-  margin-top: 60px; padding: 25px; border: 1px solid var(--border); border-radius: 4px;
+  margin-top: 60px; padding: 25px; border: 1px solid var(--border);
 }
-.lucky-item { text-align: center; }
-.lucky-item-label { font-size: 0.65rem; color: var(--text-secondary); display: block; margin-bottom: 8px; letter-spacing: 0.1rem; }
-.lucky-item-value { font-size: 1rem; color: var(--text-primary); font-weight: 400; }
-
 .summary-block { text-align: center; padding: 60px 0; border-top: 1px solid var(--border); margin-top: 60px; }
-.summary-text { font-size: 1.6rem; font-weight: 200; line-height: 1.6; letter-spacing: 0.1rem; }
+.summary-text { font-size: 1.6rem; font-weight: 200; color: var(--text-primary); }
 
-/* 表單與其他 */
-.form-container { max-width: 450px; margin: 0 auto; animation: fadeIn 0.8s ease; }
-.form-group { margin-bottom: 40px; }
 .form-group label { display: block; font-size: 0.7rem; letter-spacing: 0.2rem; color: var(--text-secondary); margin-bottom: 12px; }
-input, textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); padding: 12px 0; color: white; transition: 0.3s; }
-input:focus, textarea:focus { outline: none; border-color: var(--accent); }
-.btn-primary { width: 100%; padding: 20px; background: white; border: none; font-size: 0.8rem; letter-spacing: 0.3rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-.btn-primary:hover { opacity: 0.8; letter-spacing: 0.4rem; }
+input, textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); padding: 12px 0; color: white; }
 
 .mystic-orb { width: 40px; height: 40px; border: 1px solid var(--accent); margin: 0 auto 30px; animation: spin 4s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
