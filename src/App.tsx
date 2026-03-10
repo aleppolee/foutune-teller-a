@@ -4,45 +4,61 @@ import './App.css'
 const Step = { SELECT_METHOD: 0, INPUT_DATA: 1, LOADING: 2, RESULT: 3 } as const;
 type StepValue = typeof Step[keyof typeof Step];
 
+// 統一圖標組件 (線性簡約風)
+const Icons = {
+  Tarot: () => (
+    <svg className="method-icon-svg" viewBox="0 0 24 24"><path d="M5 3v18M19 3v18M5 7h14M5 17h14M9 3v18M15 3v18" /></svg>
+  ),
+  Palm: () => (
+    <svg className="method-icon-svg" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M6 18V11M18 11c0 5-2 7-6 7s-6-2-6-7" /></svg>
+  ),
+  Dream: () => (
+    <svg className="method-icon-svg" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 9.75 9.75 0 0 0-6.74-9.37Z" /></svg>
+  ),
+  IChing: () => (
+    <svg className="method-icon-svg" viewBox="0 0 24 24"><path d="M3 5h18M3 9h8m2 0h8M3 13h18M3 17h8m2 0h8M3 21h18" /></svg>
+  ),
+  Bazi: () => (
+    <svg className="method-icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 2a10 10 0 0 1 0 20M12 12h10" /></svg>
+  )
+};
+
 interface FortuneMethod {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
+  id: string; name: string; icon: React.ReactNode; description: string;
   fields: { id: string; label: string; type: string; placeholder: string; required?: boolean }[];
 }
 
 const METHODS: FortuneMethod[] = [
   {
-    id: 'tarot', name: '塔羅', icon: '✦', description: '原型與視覺的指引',
+    id: 'tarot', name: '塔羅意象', icon: <Icons.Tarot />, description: '解構潛意識的視覺符號',
     fields: [
       { id: 'question', label: '詢問之事', type: 'text', placeholder: '你渴望洞悉什麼？', required: true },
-      { id: 'focus', label: '目前處境', type: 'textarea', placeholder: '簡單描述目前生命狀態...', required: true }
+      { id: 'focus', label: '目前的生命狀態', type: 'textarea', placeholder: '簡單描述你的處境...', required: true }
     ]
   },
   {
-    id: 'palm', name: '靈曦手相', icon: '✋', description: '命運在掌紋中流動',
+    id: 'palm', name: '靈曦手相', icon: <Icons.Palm />, description: '解讀掌紋間的能量流動',
     fields: [
-      { id: 'photo', label: '上傳清晰手掌照', type: 'file', placeholder: '', required: true },
-      { id: 'question', label: '特別想詢問的領域', type: 'text', placeholder: '如：財運、姻緣', required: false }
+      { id: 'photo', label: '手掌照片', type: 'file', placeholder: '', required: true },
+      { id: 'question', label: '特別詢問 (選填)', type: 'text', placeholder: '財運、姻緣或健康', required: false }
     ]
   },
   {
-    id: 'dream', name: '靈曦解夢', icon: '🌙', description: '潛意識的碎片重組',
+    id: 'dream', name: '夢境解析', icon: <Icons.Dream />, description: '重組破碎的潛意識訊息',
     fields: [
-      { id: 'dream', label: '描述你的夢境', type: 'textarea', placeholder: '色彩、物體、或是那種揮之不去的感覺...', required: true }
+      { id: 'dream', label: '夢境描述', type: 'textarea', placeholder: '色彩、物體、或某種揮之不去的感覺...', required: true }
     ]
   },
   {
-    id: 'iching', name: '易經卦象', icon: '⛩️', description: '兩儀四象，乾坤之理',
+    id: 'iching', name: '易經卦象', icon: <Icons.IChing />, description: '兩儀四象間的變動之理',
     fields: [
-      { id: 'num1', label: '起卦數字一', type: 'number', placeholder: '請輸入心中浮現的第一個三位數', required: true },
-      { id: 'num2', label: '起卦數字二', type: 'number', placeholder: '請輸入心中的第二個三位數', required: true },
-      { id: 'question', label: '占卜之事', type: 'text', placeholder: '近期面臨的選擇', required: true }
+      { id: 'num1', label: '起卦數字 A', type: 'number', placeholder: '隨意輸入三位數', required: true },
+      { id: 'num2', label: '起卦數字 B', type: 'number', placeholder: '隨意輸入三位數', required: true },
+      { id: 'question', label: '占卜之事', type: 'text', placeholder: '近期面臨的選擇或困惑', required: true }
     ]
   },
   {
-    id: 'bazi', name: '八字', icon: '☯', description: '時空的流動與定數',
+    id: 'bazi', name: '八字定數', icon: <Icons.Bazi />, description: '時空座標下的命運軌跡',
     fields: [
       { id: 'name', label: '姓名', type: 'text', placeholder: '請輸入全名', required: true },
       { id: 'birthdate', label: '出生日期', type: 'date', placeholder: '', required: true },
@@ -51,11 +67,7 @@ const METHODS: FortuneMethod[] = [
   }
 ];
 
-interface FortuneResult {
-  career: string; health: string; fortune: string; love: string; future: string; summary: string; imagePrompt: string;
-}
-
-function Typewriter({ text, speed = 30 }: { text: string, speed?: number }) {
+function Typewriter({ text, speed = 25 }: { text: string, speed?: number }) {
   const [displayedText, setDisplayedText] = useState('');
   useEffect(() => {
     let i = 0;
@@ -73,15 +85,14 @@ function App() {
   const [selectedMethod, setSelectedMethod] = useState<FortuneMethod | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [imageData, setImageData] = useState<string | null>(null);
-  const [result, setResult] = useState<FortuneResult | null>(null);
+  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 能量牆邏輯
-  const todayEnergy = (new Date().getDate() * 7 + 60) % 40 + 60; // 模擬隨機 60-100
+  const todayEnergy = (new Date().getDate() * 7 + 60) % 40 + 60;
 
   useEffect(() => {
     if (!selectedMethod) return;
@@ -110,9 +121,9 @@ function App() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      setResult(data); setStep(Step.RESULT); setImageLoaded(false);
+      setResult(data); setStep(Step.RESULT);
     } catch (err: any) {
-      setError(`命運中斷：${err.message}`); setStep(Step.INPUT_DATA);
+      setError(`連動中斷：${err.message}`); setStep(Step.INPUT_DATA);
     }
   };
 
@@ -126,29 +137,29 @@ function App() {
   return (
     <div className="container">
       <audio ref={audioRef} loop src="https://assets.mixkit.co/music/preview/mixkit-meditation-ambient-34.mp3" />
-      <button className="sound-toggle" onClick={toggleAudio}>{isMuted ? '🔇' : '🔊'}</button>
+      <button className="sound-toggle" onClick={toggleAudio}>{isMuted ? 'MUTE' : 'PLAY'}</button>
 
       <header className="fade-in">
         <h1 className="title">靈曦之諭</h1>
-        <p className="subtitle">暗影與星光的交會之處</p>
+        <p className="subtitle">THE ORACLE OF LUMINA</p>
       </header>
 
       {step === Step.SELECT_METHOD && (
         <div className="daily-energy fade-in">
-          <span className="energy-label">今日靈曦能量指數</span>
+          <span className="energy-label">ENERGY LEVEL</span>
           <div className="energy-bar"><div className="energy-fill" style={{width: `${todayEnergy}%`}}></div></div>
-          <span className="energy-value">{todayEnergy}</span>
+          <span className="energy-value">{todayEnergy}%</span>
         </div>
       )}
 
-      {error && <p className="error-msg">{error}</p>}
+      {error && <p className="error-msg" style={{textAlign: 'center', color: '#f87171'}}>{error}</p>}
 
-      <main className="fade-in">
+      <main>
         {step === Step.SELECT_METHOD && (
           <div className="methods-grid">
             {METHODS.map(m => (
               <div key={m.id} className="method-card" onClick={() => { setSelectedMethod(m); setStep(Step.INPUT_DATA); }}>
-                <span className="method-icon">{m.icon}</span>
+                {m.icon}
                 <h2>{m.name}</h2>
                 <p>{m.description}</p>
               </div>
@@ -157,51 +168,62 @@ function App() {
         )}
 
         {step === Step.INPUT_DATA && selectedMethod && (
-          <div className="form-container">
-            <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)}>← 返回</button>
-            <h2 className="accent-text">{selectedMethod.name}</h2>
+          <div className="form-container fade-in">
+            <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)} style={{background:'none',border:'none',color:'var(--text-secondary)',cursor:'pointer',marginBottom:'40px',fontSize:'0.7rem',letterSpacing:'0.2rem'}}>← BACK</button>
+            <div className="form-group">
+              <label>SELECTED METHOD</label>
+              <h2 style={{fontSize:'1.5rem',fontWeight:'300'}}>{selectedMethod.name}</h2>
+            </div>
             {selectedMethod.fields.map(f => (
               <div key={f.id} className="form-group">
                 <label>{f.label}</label>
-                {f.type === 'textarea' ? <textarea onChange={e => setFormData({...formData, [f.id]: e.target.value})} rows={4} /> :
+                {f.type === 'textarea' ? <textarea onChange={e => setFormData({...formData, [f.id]: e.target.value})} /> :
                  f.type === 'file' ? <input type="file" accept="image/*" onChange={handleFileChange} /> :
-                 <input type={f.type} onChange={e => setFormData({...formData, [f.id]: e.target.value})} />}
+                 <input type={f.type} placeholder={f.placeholder} onChange={e => setFormData({...formData, [f.id]: e.target.value})} />}
               </div>
             ))}
-            {imageData && <img src={imageData} className="preview-img" alt="預覽" />}
-            <button className="btn-primary" onClick={startFortuneTelling} disabled={!isValid}>啟動靈曦儀式</button>
+            <button className="btn-primary" onClick={startFortuneTelling} disabled={!isValid}>INVOLVE THE ORACLE</button>
           </div>
         )}
 
         {step === Step.LOADING && (
-          <div className="loading-container">
+          <div className="loading-container fade-in" style={{textAlign:'center',padding:'100px 0'}}>
             <div className="mystic-orb"></div>
-            <p className="loading-text">正在凝結未來的倒影...</p>
+            <p className="subtitle">正在解析命運的頻率...</p>
           </div>
         )}
 
         {step === Step.RESULT && result && (
           <div className="result-container">
-            <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)}>← 再次占卜</button>
+            <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)} style={{background:'none',border:'none',color:'var(--text-secondary)',cursor:'pointer',marginBottom:'40px',fontSize:'0.7rem',letterSpacing:'0.2rem'}}>← NEW SESSION</button>
             <div className="image-wrapper">
-              {!imageLoaded && <div className="image-placeholder">正在召喚命運意象...</div>}
               <img 
-                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(result.imagePrompt)}?width=1000&height=600&nologo=true&seed=${Date.now()}`} 
+                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(result.imagePrompt)}?width=1200&height=800&nologo=true&seed=${Date.now()}`} 
                 className={`result-image ${imageLoaded ? 'loaded' : ''}`}
                 onLoad={() => setImageLoaded(true)}
                 alt="命運視覺"
               />
             </div>
             <div className="result-grid">
-              {['career', 'fortune', 'love', 'health'].map(k => (
-                <div key={k} className="result-item">
-                  <h3>{k === 'career' ? '事業' : k === 'fortune' ? '財運' : k === 'love' ? '情感' : '身心'}</h3>
-                  <p><Typewriter text={(result as any)[k]} /></p>
+              {[
+                {label:'事業與志業', val: result.career},
+                {label:'物質流動', val: result.fortune},
+                {label:'情感連結', val: result.love},
+                {label:'能量狀態', val: result.health}
+              ].map(item => (
+                <div key={item.label} className="result-item">
+                  <h3>{item.label}</h3>
+                  <p><Typewriter text={item.val} /></p>
                 </div>
               ))}
-              <div className="result-item full"><h3>未來轉折</h3><p><Typewriter text={result.future} /></p></div>
+              <div className="result-item" style={{gridColumn:'1/-1'}}>
+                <h3>未來轉折</h3>
+                <p><Typewriter text={result.future} /></p>
+              </div>
             </div>
-            <div className="summary-block"><p className="summary-text"><Typewriter text={result.summary} speed={60} /></p></div>
+            <div className="summary-block">
+              <p className="summary-text"><Typewriter text={result.summary} speed={50} /></p>
+            </div>
           </div>
         )}
       </main>
