@@ -47,6 +47,15 @@ function App() {
 
   const energy = (new Date().getDate() * 7 + 60) % 40 + 60;
 
+  const goToMethodSelection = () => {
+    setStep(Step.SELECT_METHOD);
+    setSelectedMethod(null);
+    setFormData({});
+    setImageData(null);
+    setResult(null);
+    setError('');
+  };
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) { const reader = new FileReader(); reader.onloadend = () => setImageData(reader.result as string); reader.readAsDataURL(file); }
@@ -93,7 +102,7 @@ function App() {
 
       {step === Step.INPUT_DATA && selectedMethod && (
         <div className="form-container fade-in">
-          <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)} style={{background:'none',border:'none',color:'var(--text-secondary)',cursor:'pointer',marginBottom:'40px',fontSize:'0.7rem',letterSpacing:'0.2rem'}}>← BACK</button>
+          <button className="btn-back" onClick={goToMethodSelection}>← 返回占卜方式</button>
           {selectedMethod.fields.map(f => (
             <div key={f.id} className="form-group">
               <label>{f.label}</label>
@@ -123,7 +132,7 @@ function App() {
       {step === Step.RESULT && result && isRevealed && (
         <div className="result-container fade-in">
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'40px'}}>
-            <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)} style={{background:'none',border:'none',color:'var(--text-secondary)',cursor:'pointer',fontSize:'0.7rem',letterSpacing:'0.2rem'}}>← NEW SESSION</button>
+            <button className="btn-back" onClick={goToMethodSelection}>← 換一個占卜方式</button>
             <button onClick={copyResult} style={{background:'none',border:'1px solid var(--border)',color:'var(--text-secondary)',cursor:'pointer',fontSize:'0.6rem',padding:'5px 15px',letterSpacing:'0.1rem'}}>SHARE</button>
           </div>
 
