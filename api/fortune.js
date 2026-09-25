@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json", temperature: 0.8 }
     });
 
@@ -50,6 +50,7 @@ export default async function handler(req, res) {
     return res.status(200).json(JSON.parse(result.response.text()));
   } catch (error) {
     console.error("Gemini Error:", error);
-    return res.status(500).json({ error: "靈力連動中斷。" });
+    const message = error instanceof Error ? error.message : "Unknown Gemini API error";
+    return res.status(500).json({ error: `靈力連動中斷：${message}` });
   }
 }
