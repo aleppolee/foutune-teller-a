@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 const Step = { SELECT_METHOD: 0, INPUT_DATA: 1, LOADING: 2, RESULT: 3 } as const;
@@ -42,8 +42,6 @@ function App() {
   const [result, setResult] = useState<any>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [error, setError] = useState('');
-  const [isMuted, setIsMuted] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const energy = (new Date().getDate() * 7 + 60) % 40 + 60;
 
@@ -79,9 +77,6 @@ function App() {
 
   return (
     <div className="container">
-      <audio ref={audioRef} loop src="https://upload.wikimedia.org/wikipedia/commons/4/49/SoundAudio_-_Forest_%28relaxing_music%29.opus" />
-      <button className="sound-toggle" onClick={() => { if (audioRef.current) { isMuted ? audioRef.current.play() : audioRef.current.pause(); setIsMuted(!isMuted); } }}>{isMuted ? 'OFF' : 'ON'}</button>
-      
       <header className={`site-header fade-in ${step !== Step.SELECT_METHOD ? 'compact' : ''}`}>
         <h1 className="title">靈曦之諭</h1>
         <p className="subtitle">THE ORACLE OF LUMINA</p>
