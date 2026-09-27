@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method Not Allowed' });
 
@@ -11,7 +13,7 @@ export default async function handler(req, res) {
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-pro",
+      model: "gemini-3.8-flash",
       generationConfig: { responseMimeType: "application/json", temperature: 0.8 }
     });
 
@@ -37,19 +39,30 @@ export default async function handler(req, res) {
         }
       }`;
 
+    const content = imageData
+      ? [
+          { inlineData: { mimeType: "image/jpeg", data: imageData.split(',')[1] } },
+          { text: promptText }
+        ]
+      : promptText;
+
     let result;
-    if (imageData) {
-      result = await model.generateContent([
-        { inlineData: { mimeType: "image/jpeg", data: imageData.split(',')[1] } },
-        { text: promptText }
-      ]);
-    } else {
-      result = await model.generateContent(promptText);
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        result = await model.generateContent(content);
+        break;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const isTransient = /\[(429|500|503) [^\]]+\]/.test(message);
+        if (!isTransient || attempt === 2) throw error;
+        await sleep(1000 * 2 ** attempt);
+      }
     }
 
     return res.status(200).json(JSON.parse(result.response.text()));
   } catch (error) {
     console.error("Gemini Error:", error);
-    return res.status(500).json({ error: "靈力連動中斷。" });
+    const message = error instanceof Error ? error.message : "Unknown Gemini API error";
+    return res.status(500).json({ error: `靈力連動中斷：${message}` });
   }
 }

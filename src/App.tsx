@@ -47,6 +47,15 @@ function App() {
 
   const energy = (new Date().getDate() * 7 + 60) % 40 + 60;
 
+  const goToMethodSelection = () => {
+    setStep(Step.SELECT_METHOD);
+    setSelectedMethod(null);
+    setFormData({});
+    setImageData(null);
+    setResult(null);
+    setError('');
+  };
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) { const reader = new FileReader(); reader.onloadend = () => setImageData(reader.result as string); reader.readAsDataURL(file); }
@@ -73,29 +82,43 @@ function App() {
       <audio ref={audioRef} loop src="https://assets.mixkit.co/music/preview/mixkit-meditation-ambient-34.mp3" />
       <button className="sound-toggle" onClick={() => { if (audioRef.current) { isMuted ? audioRef.current.play() : audioRef.current.pause(); setIsMuted(!isMuted); } }}>{isMuted ? 'OFF' : 'ON'}</button>
       
-      <header className="fade-in">
+      <header className={`site-header fade-in ${step !== Step.SELECT_METHOD ? 'compact' : ''}`}>
         <h1 className="title">靈曦之諭</h1>
         <p className="subtitle">THE ORACLE OF LUMINA</p>
       </header>
 
       {step === Step.SELECT_METHOD && (
         <>
+          <div className="intro-block fade-in">
+            <p className="eyebrow">CHOOSE YOUR PATH</p>
+            <h2>選擇你的占卜方式</h2>
+            <p>讓直覺帶你找到此刻最需要的答案。</p>
+          </div>
           <div className="daily-energy fade-in">
             <span className="energy-label">LUMINA ENERGY</span>
             <div className="energy-bar"><div className="energy-fill" style={{width: `${energy}%`}}></div></div>
             <span className="energy-value">{energy}%</span>
           </div>
           <div className="methods-grid">
-            {METHODS.map(m => (<div key={m.id} className="method-card" onClick={() => { setSelectedMethod(m); setStep(Step.INPUT_DATA); }}>{m.icon()}<h2>{m.name}</h2><p>{m.description}</p></div>))}
+            {METHODS.map(m => (
+              <button key={m.id} className="method-card" onClick={() => { setSelectedMethod(m); setStep(Step.INPUT_DATA); }}>
+                {m.icon()}<h2>{m.name}</h2><p>{m.description}</p><span className="card-action">開始探索 <span aria-hidden="true">→</span></span>
+              </button>
+            ))}
           </div>
         </>
       )}
 
       {step === Step.INPUT_DATA && selectedMethod && (
-        <div className="form-container fade-in">
-          <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)} style={{background:'none',border:'none',color:'var(--text-secondary)',cursor:'pointer',marginBottom:'40px',fontSize:'0.7rem',letterSpacing:'0.2rem'}}>← BACK</button>
+        <div className="form-container content-panel fade-in">
+          <button className="btn-back" onClick={goToMethodSelection}>← 返回占卜方式</button>
+          <div className="section-heading">
+            <p className="eyebrow">YOUR SELECTED PATH</p>
+            <h2>{selectedMethod.name}</h2>
+            <p>{selectedMethod.description}</p>
+          </div>
           {selectedMethod.fields.map(f => (
-            <div key={f.id} className="form-group">
+            <div key={f.id} className={`form-group ${f.type === 'textarea' ? 'wide-field' : ''}`}>
               <label>{f.label}</label>
               {f.type === 'textarea' ? <textarea onChange={e => setFormData({...formData, [f.id]: e.target.value})} /> :
                f.type === 'file' ? <input type="file" onChange={handleFile} /> :
@@ -122,9 +145,9 @@ function App() {
 
       {step === Step.RESULT && result && isRevealed && (
         <div className="result-container fade-in">
-          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'40px'}}>
-            <button className="btn-back" onClick={() => setStep(Step.SELECT_METHOD)} style={{background:'none',border:'none',color:'var(--text-secondary)',cursor:'pointer',fontSize:'0.7rem',letterSpacing:'0.2rem'}}>← NEW SESSION</button>
-            <button onClick={copyResult} style={{background:'none',border:'1px solid var(--border)',color:'var(--text-secondary)',cursor:'pointer',fontSize:'0.6rem',padding:'5px 15px',letterSpacing:'0.1rem'}}>SHARE</button>
+          <div className="result-toolbar">
+            <button className="btn-back" onClick={goToMethodSelection}>← 換一個占卜方式</button>
+            <button className="share-button" onClick={copyResult}>SHARE</button>
           </div>
 
           <div className="result-grid">
