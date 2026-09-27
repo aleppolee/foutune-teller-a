@@ -79,7 +79,7 @@ function App() {
 
   return (
     <div className="container">
-      <audio ref={audioRef} loop src="https://assets.mixkit.co/music/preview/mixkit-meditation-ambient-34.mp3" />
+      <audio ref={audioRef} loop src="https://upload.wikimedia.org/wikipedia/commons/4/49/SoundAudio_-_Forest_%28relaxing_music%29.opus" />
       <button className="sound-toggle" onClick={() => { if (audioRef.current) { isMuted ? audioRef.current.play() : audioRef.current.pause(); setIsMuted(!isMuted); } }}>{isMuted ? 'OFF' : 'ON'}</button>
       
       <header className={`site-header fade-in ${step !== Step.SELECT_METHOD ? 'compact' : ''}`}>

@@ -44,3 +44,5 @@ npm run dev
 - Vite
 - Google Gemini API
 - Vercel Serverless Function
+
+背景音效使用 Wikimedia Commons 的 [Forest (relaxing music)](https://commons.wikimedia.org/wiki/File:SoundAudio_-_Forest_(relaxing_music).opus)，作者 SoundAudio，採 CC BY 3.0 授權。
