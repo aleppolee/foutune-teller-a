@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# 靈曦之諭
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+使用 React、Vite 和 Google Gemini API 製作的 AI 占卜網站。
 
-Currently, two official plugins are available:
+## 一鍵部署到 Vercel
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+點擊下面的按鈕，就能把這個專案複製到自己的 Vercel 專案：
 
-## React Compiler
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/aleppolee/foutune-teller-a/tree/aleppolee-fix-free-gemini-model&env=GEMINI_API_KEY&envDescription=請填入你的 Google Gemini API Key)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+部署時請在 **Environment Variables** 填入：
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+GEMINI_API_KEY=你的 Google Gemini API Key
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+每位使用者都應該使用自己的 Gemini API key。API key 只需要填在自己的 Vercel 專案中，不要寫進程式碼或提交到 GitHub。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 本機開發
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+安裝依賴：
+
+```bash
+npm install
 ```
+
+設定環境變數後啟動開發伺服器：
+
+```bash
+GEMINI_API_KEY=你的 Google Gemini API Key npm run dev
+```
+
+Windows PowerShell 可使用：
+
+```powershell
+$env:GEMINI_API_KEY="你的 Google Gemini API Key"
+npm run dev
+```
+
+## 使用技術
+
+- React
+- TypeScript
+- Vite
+- Google Gemini API
+- Vercel Serverless Function
